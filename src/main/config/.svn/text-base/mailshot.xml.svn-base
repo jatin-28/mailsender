@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="
+     http://www.springframework.org/schema/beans
+     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+     http://www.springframework.org/schema/context
+     http://www.springframework.org/schema/context/spring-context-3.0.xsd
+     http://www.springframework.org/schema/tx
+     http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+     http://www.springframework.org/schema/aop
+     http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+
+    <!-- Configure annotated beans -->
+        <context:annotation-config />
+        <context:component-scan base-package="com.ss.mailshot" />
+
+    <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"/>
+
+    <!-- DataSource: hsqldb file -->
+        <bean id="myDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">               
+            <property name="driverClassName" value="org.sqlite.JDBC" />
+            <property name="url" value="jdbc:sqlite:mailshot.db" />
+            <property name="username" value="" />
+            <property name="password" value="" />
+        </bean>
+    
+
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+        <property name="dataSource" ref="myDataSource"/>
+        <property name="configLocation">
+                    <value>classpath:hibernate.cfg.xml</value>
+                </property>
+        <property name="configurationClass">
+                    <value>org.hibernate.cfg.AnnotationConfiguration</value>
+                </property>
+        <property name="hibernateProperties">
+                    <props>
+                         <prop key="hibernate.show_sql">true</prop>
+		<prop key="hibernate.format_sql">true</prop>
+		<prop key="hibernate.dialect">com.ss.mailshot.data.hibernate.SQLiteDialect</prop>
+        <prop key="hibernate.hbm2ddl.auto">update</prop>
+                    </props>
+                </property>
+
+    </bean>
+
+<!-- Transaction management -->
+    <tx:annotation-driven/>
+    <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <!-- services -->
+    <bean id="templateService" class="com.ss.mailshot.service.TemplateServiceImpl"/>
+
+    <bean id="mailServerService" class="com.ss.mailshot.service.MailServerServiceImpl" />
+
+    <!-- Main class-->
+    <bean id="mailshotGUI" class="com.ss.mailshot.gui.MailShotGUI"/>
+
+    <bean id="createEditTemplateDialog" class="com.ss.mailshot.gui.CreateEditTemplate" >
+        <property name="fileChooser" ref="fileChooser"/>
+    </bean>
+
+    <bean id="mailServersDialog" class="com.ss.mailshot.gui.ManageMailServers" />
+
+    <bean id="mailerDialog" class="com.ss.mailshot.gui.MailerDialog">
+        <property name="fileChooser" ref="fileChooser"/>
+        <property name="mailProcessor" ref="mailProcessor"/>
+    </bean>
+
+    <bean id="fileChooser" class="javax.swing.JFileChooser">
+        <property name="currentDirectory" value="."/>
+        <property name="fileFilter" ref="fileFilter" />
+    </bean>
+
+    <bean id="fileFilter" class="com.ss.mailshot.gui.CSVFileFilter"/>
+
+    <bean id="mailer" class="com.ss.mailshot.Mailer"/>
+    <bean id="renderer" class="com.ss.mailshot.FreemarkerRenderer"/>
+
+
+    <bean id="mailProcessor" class="com.ss.mailshot.logic.MailProcessorImpl"/>
+
+</beans>
