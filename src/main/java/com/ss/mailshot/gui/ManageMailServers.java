@@ -173,7 +173,7 @@ public class ManageMailServers extends JDialog {
 
         String interval = delayintervalTextField.getText();
         long intervalLong = interval == null ? 1 : Long.parseLong(interval);
-        data.setMessageIntervalInSecs(intervalLong);
+        data.setMessageIntervalInSecs(new Long(intervalLong).intValue());
     }
 
     public boolean isModified(MailHost data) {

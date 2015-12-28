@@ -1,6 +1,5 @@
 package com.ss.mailshot.data.datamodel;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -25,8 +24,8 @@ public class MailHost {
     private String name;
     private String description;
 
-     @Column(nullable = false, columnDefinition="default 1")
-    private Long messageIntervalInSecs;
+    //@Column(nullable = false, columnDefinition="default 1")
+    private Integer messageIntervalInSecs = 1;
 
     public String getDescription() {
         return description;
@@ -84,11 +83,11 @@ public class MailHost {
         this.smtpAuth = smtpAuth;
     }
 
-    public Long getMessageIntervalInSecs() {
+    public Integer getMessageIntervalInSecs() {
         return messageIntervalInSecs;
     }
 
-    public void setMessageIntervalInSecs(Long messageIntervalInSecs) {
+    public void setMessageIntervalInSecs(Integer messageIntervalInSecs) {
         this.messageIntervalInSecs = messageIntervalInSecs;
     }
 
